@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coletor Rádio Brasil - Archive.org</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #12121a;
+      --border: #1e1e2e;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --success: #22c55e;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --text: #e2e8f0;
+      --text-dim: #64748b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-value.success { color: var(--success); }
+    .stat-value.warning { color: var(--warning); }
+    .stat-value.error { color: var(--error); }
+    .stat-value.accent { color: var(--accent); }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .queries-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .query-tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { background: var(--accent-hover); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn.success { background: var(--success); }
+    .btn.error { background: var(--error); }
+
+    .progress-container {
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .log-container {
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .log-entry {
+      padding: 2px 0;
+    }
+
+    .log-entry.info { color: var(--text); }
+    .log-entry.success { color: var(--success); }
+    .log-entry.error { color: var(--error); }
+    .log-entry.warning { color: var(--warning); }
+
+    .catalog-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .catalog-table th,
+    .catalog-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .catalog-table th {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .catalog-table td {
+      font-size: 0.85rem;
+    }
+
+    .catalog-table tr:hover td {
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .status-badge.verified { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+    .status-badge.failed { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📻 Coletor de Acervo</h1>
+      <p class="subtitle">Busca automática no Archive.org - Radios Antigas Brasil</p>
+    </header>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Estatísticas do Catálogo</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value accent" id="totalFound">0</div>
+          <div class="stat-label">Encontradas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value success" id="totalValid">0</div>
+          <div class="stat-label">Verificadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value warning" id="totalPending">0</div>
+          <div class="stat-label">Pendentes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value error" id="totalFailed">0</div>
+          <div class="stat-label">Falhas</div>
+        </div>
+      </div>
+
+      <div class="queries-list">
+        <span class="query-tag">subject:"Brazilian music"</span>
+        <span class="query-tag">subject:samba</span>
+        <span class="query-tag">subject:choro</span>
+        <span class="query-tag">subject:"bossa nova"</span>
+        <span class="query-tag">subject:forró</span>
+        <span class="query-tag">subject:maxixe</span>
+        <span class="query-tag">subject:chorinho</span>
+        <span class="query-tag">subject:"samba de roda"</span>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="collectBtn">🚀 Iniciar Coleta</button>
+        <button class="btn success" id="verifyBtn">✓ Verificar URLs</button>
+        <button class="btn" id="exportBtn">📤 Exportar para Player</button>
+        <button class="btn error" id="clearBtn">🗑 Limpar Tudo</button>
+      </div>
+
+      <div class="progress-container" id="progressContainer" style="display: none;">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="progressStatus">Processando...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Log de Atividades</span>
+      </div>
+      <div class="log-container" id="logContainer">
+        <div class="log-entry info">Aguardando iniciar coleta...</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Catálogo de Faixas</span>
+        <span id="catalogCount">0 itens</span>
+      </div>
+      <table class="catalog-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Artista</th>
+            <th>Ano</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="catalogBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SEARCH_QUERIES = [
+      'subject:"Brazilian music" AND mediatype:audio',
+      'subject:samba AND mediatype:audio',
+      'subject:choro AND mediatype:audio',
+      'subject:"bossa nova" AND mediatype:audio',
+      'subject:forró AND mediatype:audio',
+      'subject:maxixe AND mediatype:audio',
+      'subject:chorinho AND mediatype:audio',
+      'subject:"samba de roda" AND mediatype:audio'
+    ];
+
+    const AUDIO_PATTERNS = [
+      '{id}.mp3',
+      '{id}_64kb.mp3',
+      '{id}_128kb.mp3',
+      '01.mp3',
+      '01_64kb.mp3',
+      '{id}.ogg',
+      '{id}.flac'
+    ];
+
+    let catalog = JSON.parse(localStorage.getItem('radioCatalog')) || [];
+
+    const totalFound = document.getElementById('totalFound');
+    const totalValid = document.getElementById('totalValid');
+    const totalPending = document.getElementById('totalPending');
+    const totalFailed = document.getElementById('totalFailed');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressStatus = document.getElementById('progressStatus');
+    const progressPercent = document.getElementById('progressPercent');
+    const logContainer = document.getElementById('logContainer');
+    const catalogBody = document.getElementById('catalogBody');
+    const catalogCount = document.getElementById('catalogCount');
+
+    function log(msg, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      const time = new Date().toLocaleTimeString();
+      entry.textContent = `[${time}] ${msg}`;
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function updateStats() {
+      totalFound.textContent = catalog.length;
+      totalValid.textContent = catalog.filter(t => t.status === 'verified').length;
+      totalPending.textContent = catalog.filter(t => t.status === 'pending').length;
+      totalFailed.textContent = catalog.filter(t => t.status === 'failed').length;
+    }
+
+    function renderCatalog() {
+      catalogCount.textContent = `${catalog.length} itens`;
+      
+      catalogBody.innerHTML = catalog.slice(0, 50).map(track => `
+        <tr>
+          <td style="font-family: monospace; font-size: 0.7rem;">${track.id.substring(0, 12)}...</td>
+          <td>${track.title || 'N/A'}</td>
+          <td>${track.artist || 'N/A'}</td>
+          <td>${track.year || 'N/A'}</td>
+          <td><span class="status-badge ${track.status}">${track.status}</span></td>
+        </tr>
+      `).join('');
+
+      if (catalog.length > 50) {
+        catalogBody.innerHTML += `<tr><td colspan="5" style="text-align: center; color: var(--text-dim);">... e mais ${catalog.length - 50} itens</td></tr>`;
+      }
+    }
+
+    async function searchArchive(query) {
+      const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=creator&fl[]=date&fl[]=year&rows=100&output=json`;
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.response?.docs || [];
+      } catch (e) {
+        log(`Erro na busca: ${query}`, 'error');
+        return [];
+      }
+    }
+
+    async function collect() {
+      progressContainer.style.display = 'block';
+      document.getElementById('collectBtn').disabled = true;
+      
+      log('Iniciando coleta no Archive.org...', 'info');
+      
+      let allDocs = [];
+      const seen = new Set();
+
+      for (let i = 0; i < SEARCH_QUERIES.length; i++) {
+        const query = SEARCH_QUERIES[i];
+        const queryName = query.split(' AND ')[0].replace('subject:', '').replace(/"/g, '');
+        
+        log(`Buscando: ${queryName}...`, 'info');
+        
+        const docs = await searchArchive(query);
+        log(`Encontrados ${docs.length} resultados para "${queryName}"`, 'success');
+        
+        for (const doc of docs) {
+          if (!seen.has(doc.identifier)) {
+            seen.add(doc.identifier);
+            allDocs.push(doc);
+          }
+        }
+      }
+
+      log(`Total único: ${allDocs.length} faixas`, 'success');
+
+      catalog = allDocs.map(doc => {
+        const existing = catalog.find(t => t.id === doc.identifier);
+        return {
+          id: doc.identifier,
+          title: doc.title?.[0] || doc.title || 'Sem título',
+          artist: doc.creator?.[0] || doc.creator || 'Artista desconhecido',
+          year: doc.date?.[0]?.substring(0, 4) || doc.year?.[0] || null,
+          source: 'archive.org',
+          urlBase: `https://archive.org/download/${doc.identifier}/`,
+          status: existing?.status || 'pending',
+          lastCheck: existing?.lastCheck || null,
+          error: existing?.error || null
+        };
+      });
+
+      localStorage.setItem('radioCatalog', JSON.stringify(catalog));
+      
+      updateStats();
+      renderCatalog();
+      
+      log(`Coleta concluída! ${catalog.length} faixas adicionadas ao catálogo.`, 'success');
+      
+      document.getElementById('collectBtn').disabled = false;
+      progressContainer.style.display = 'none';
+    }
+
+    async function verifyUrl(url) {
+      return new Promise(resolve => {
+        const timeout = setTimeout(() => resolve(false), 3000);
+        
+        const img = new Image();
+        img.onload = () => { clearTimeout(timeout); resolve(true); };
+        img.onerror = () => { clearTimeout(timeout); resolve(false); };
+        img.src = url + '?t=' + Date.now();
+      });
+    }
+
+    async function verifyUrls() {
+      progressContainer.style.display = 'block';
+      document.getElementById('verifyBtn').disabled = true;
+      
+      log('Iniciando verificação de URLs...', 'info');
+      
+      const pending = catalog.filter(t => t.status !== 'verified');
+      let verified = 0;
+      let failed = 0;
+
+      for (let i = 0; i < pending.length; i++) {
+        const track = pending[i];
+        
+        progressFill.style.width = ((i + 1) / pending.length * 100) + '%';
+        progressPercent.textContent = `${Math.round((i + 1) / pending.length * 100)}%`;
+        progressStatus.textContent = `Verificando: ${track.title.substring(0, 30)}...`;
+
+        let found = false;
+        
+        for (const pattern of AUDIO_PATTERNS) {
+          const url = track.urlBase + pattern.replace('{id}', track.id);
+          
+          if (await verifyUrl(url)) {
+            found = true;
+            track.validUrl = url;
+            track.status = 'verified';
+            track.lastCheck = new Date().toISOString();
+            verified++;
+            log(`✓ ${track.title.substring(0, 40)}`, 'success');
+            break;
+          }
+        }
+
+        if (!found) {
+          track.status = 'failed';
+          track.lastCheck = new Date().toISOString();
+          failed++;
+          log(`✗ ${track.title.substring(0, 40)}`, 'error');
+        }
+
+        if (i % 10 === 0) {
+          localStorage.setItem('radioCatalog', JSON.stringify(catalog));
+        }
+      }
+
+      localStorage.setItem('radioCatalog', JSON.stringify(catalog));
+      
+      updateStats();
+      renderCatalog();
+      
+      log(`Verificação concluída: ${verified} válidas, ${failed} falharam`, 'success');
+      
+      document.getElementById('verifyBtn').disabled = false;
+      progressContainer.style.display = 'none';
+    }
+
+    function exportToPlayer() {
+      const verified = catalog.filter(t => t.status === 'verified');
+      
+      if (verified.length === 0) {
+        log('Nenhuma faixa verificada para exportar!', 'error');
+        return;
+      }
+
+      const playerData = verified.map(t => ({
+        title: t.title,
+        artist: t.artist + (t.year ? ` (${t.year})` : ''),
+        url: t.validUrl,
+        id: t.id
+      }));
+
+      localStorage.setItem('radioPlaylist', JSON.stringify(playerData));
+      
+      log(`Exportado ${playerData.length} faixas verificadas para o player!`, 'success');
+      log(`Para testar, abra o player e ele usará as faixas exportadas.`, 'info');
+    }
+
+    function clearAll() {
+      if (confirm('Tem certeza que deseja limpar todo o catálogo?')) {
+        catalog = [];
+        localStorage.removeItem('radioCatalog');
+        localStorage.removeItem('radioPlaylist');
+        
+        updateStats();
+        renderCatalog();
+        
+        log('Catálogo limpo com sucesso.', 'warning');
+      }
+    }
+
+    document.getElementById('collectBtn').addEventListener('click', collect);
+    document.getElementById('verifyBtn').addEventListener('click', verifyUrls);
+    document.getElementById('exportBtn').addEventListener('click', exportToPlayer);
+    document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+    updateStats();
+    renderCatalog();
+  </script>
+</body>
+</html>
